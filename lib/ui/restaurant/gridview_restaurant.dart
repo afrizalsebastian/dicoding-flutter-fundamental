@@ -24,19 +24,6 @@ class GridViewRestaurant extends StatefulWidget {
 }
 
 class _GridViewRestaurantState extends State<GridViewRestaurant> {
-  List<String> favoriteId = [];
-
-  @override
-  void initState() {
-    super.initState();
-    DatabaseHelper().getFavoriteRestaurants().then((value) {
-      final allId = value.map((e) => e.id).toList();
-      setState(() {
-        favoriteId = allId;
-      });
-    });
-  }
-
   List<Widget> _createGrid(BuildContext context, List<Restaurant> restaurants,
       ConsumerTypeList typeList) {
     return List<Widget>.from(
@@ -81,73 +68,41 @@ class _GridViewRestaurantState extends State<GridViewRestaurant> {
                             ),
                           ),
                         ),
-                        (typeList == ConsumerTypeList.favorite
-                            ? Positioned(
-                                top: 5,
-                                right: 5,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      if (favoriteId.contains(restaurant.id)) {
-                                        Provider.of<DbProvider>(context,
-                                                listen: false)
-                                            .deleteFavorite(restaurant.id);
-                                        favoriteId.remove(restaurant.id);
-                                      } else {
-                                        Provider.of<DbProvider>(context,
-                                                listen: false)
-                                            .addFavoriteRestaurant(restaurant);
-                                        favoriteId.add(restaurant.id);
-                                      }
-                                    });
-                                  },
-                                  child: SizedBox(
-                                    width: 50,
-                                    child: Icon(
-                                      favoriteId.contains(restaurant.id)
-                                          ? Icons.favorite
-                                          : Icons.favorite_outline,
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : Positioned(
-                                top: 5,
-                                right: 5,
-                                child: ChangeNotifierProvider<DbProvider>(
-                                  create: (_) => DbProvider(),
-                                  child: Consumer<DbProvider>(
-                                    builder: (context, dbProvider, child) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            if (favoriteId
-                                                .contains(restaurant.id)) {
-                                              dbProvider.deleteFavorite(
-                                                  restaurant.id);
-                                              favoriteId.remove(restaurant.id);
-                                            } else {
-                                              dbProvider.addFavoriteRestaurant(
-                                                  restaurant);
-                                              favoriteId.add(restaurant.id);
-                                            }
-                                          });
-                                        },
-                                        child: SizedBox(
-                                          width: 50,
-                                          child: Icon(
-                                            favoriteId.contains(restaurant.id)
-                                                ? Icons.favorite
-                                                : Icons.favorite_outline,
-                                            color: Colors.red,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              )),
+                        Positioned(
+                          top: 5,
+                          right: 5,
+                          child: GestureDetector(
+                            onTap: () {
+                              final listFavoriteId = Provider.of<DbProvider>(
+                                      context,
+                                      listen: false)
+                                  .favoriteRestaurant
+                                  .map((e) => e.id)
+                                  .toList();
+
+                              if (listFavoriteId.contains(restaurant.id)) {
+                                Provider.of<DbProvider>(context, listen: false)
+                                    .deleteFavorite(restaurant.id);
+                              } else {
+                                Provider.of<DbProvider>(context, listen: false)
+                                    .addFavoriteRestaurant(restaurant);
+                              }
+                            },
+                            child: SizedBox(
+                              width: 50,
+                              child: Icon(
+                                Provider.of<DbProvider>(context, listen: true)
+                                        .favoriteRestaurant
+                                        .map((e) => e.id)
+                                        .toList()
+                                        .contains(restaurant.id)
+                                    ? Icons.favorite
+                                    : Icons.favorite_outline,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),

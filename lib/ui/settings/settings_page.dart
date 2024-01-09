@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:restaurant_app_fundamental_1/common/navigation.dart';
 import 'package:restaurant_app_fundamental_1/provider/schedule_provider.dart';
 import 'package:restaurant_app_fundamental_1/widget/custom_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
   static String routeName = '/settings';
@@ -16,27 +15,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool _isNotificationOn = false;
-
-  void _saveNotifSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setBool('notification_settings', _isNotificationOn);
-  }
-
-  void _loadNotificationSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    setState(() {
-      _isNotificationOn = prefs.getBool('notification_settings') ?? false;
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loadNotificationSettings();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,16 +69,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   builder: (context, scheduled, _) {
                     return Switch(
                       activeColor: Colors.blue,
-                      value: _isNotificationOn,
+                      value: scheduled.isScheduled,
                       onChanged: (value) {
                         if (Platform.isIOS) {
                           customDialog(context);
                         } else {
-                          setState(() {
-                            _isNotificationOn = value;
-                            scheduled.scheduledRestaurants(value);
-                            _saveNotifSettings();
-                          });
+                          scheduled.scheduledRestaurants(value);
                         }
                       },
                     );

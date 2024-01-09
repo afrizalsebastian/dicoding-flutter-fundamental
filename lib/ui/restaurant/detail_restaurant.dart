@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:restaurant_app_fundamental_1/api/api_services.dart';
 import 'package:restaurant_app_fundamental_1/common/navigation.dart';
 import 'package:restaurant_app_fundamental_1/model/detail_restaurant.dart';
+import 'package:restaurant_app_fundamental_1/provider/db_provider.dart';
 import 'package:restaurant_app_fundamental_1/provider/detail_restaurant_provider.dart';
 import 'package:restaurant_app_fundamental_1/provider/restaurant_enum.dart';
 import 'package:restaurant_app_fundamental_1/utils/database_helper.dart';
@@ -54,12 +55,22 @@ class _DetailRestaurantState extends State<DetailRestaurant> {
                 top: 5,
                 child: SizedBox(
                   width: 50,
-                  child: Icon(
-                    favoriteId.contains(restaurant.id)
-                        ? Icons.favorite
-                        : Icons.favorite_outline,
-                    color: Colors.red,
-                    size: 36,
+                  child: ChangeNotifierProvider<DbProvider>(
+                    create: (_) => DbProvider(),
+                    child: Consumer<DbProvider>(
+                      builder: (context, value, child) {
+                        return Icon(
+                          value.favoriteRestaurant
+                                  .map((e) => e.id)
+                                  .toList()
+                                  .contains(restaurant.id)
+                              ? Icons.favorite
+                              : Icons.favorite_outline,
+                          color: Colors.red,
+                          size: 36,
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),

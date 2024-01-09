@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:restaurant_app_fundamental_1/common/navigation.dart';
+import 'package:restaurant_app_fundamental_1/provider/db_provider.dart';
 import 'package:restaurant_app_fundamental_1/ui/restaurant/detail_restaurant.dart';
 import 'package:restaurant_app_fundamental_1/ui/restaurant/favorite_restaurant.dart';
 import 'package:restaurant_app_fundamental_1/ui/restaurant/list_restaurant.dart';
@@ -20,9 +22,23 @@ class _HomePageState extends State<HomePage> {
   final NotificationHelper _notificationHelper = NotificationHelper();
 
   final List<Widget> _listPage = [
-    const ListRestaurant(),
+    ChangeNotifierProvider<DbProvider>(
+      create: (_) => DbProvider(),
+      child: Consumer<DbProvider>(
+        builder: (context, value, child) {
+          return const ListRestaurant();
+        },
+      ),
+    ),
     const FavoriteRestaurant(),
-    const SearchRestaurant(),
+    ChangeNotifierProvider<DbProvider>(
+      create: (_) => DbProvider(),
+      child: Consumer<DbProvider>(
+        builder: (context, value, child) {
+          return const SearchRestaurant();
+        },
+      ),
+    ),
   ];
 
   final List<BottomNavigationBarItem> _bottomNavBarItems = [

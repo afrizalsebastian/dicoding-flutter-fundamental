@@ -26,14 +26,17 @@ class SchedulingProvider extends ChangeNotifier {
         wakeup: true,
       );
     }
+    notifyListeners();
   }
 
   Future<bool> scheduledRestaurants(bool value) async {
     _isScheduled = value;
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('notification_settings', _isScheduled);
+
     if (_isScheduled) {
       print('Scheduling Restaurants Activated');
       notifyListeners();
-      BackgroundService.callback();
       final bool androidAlarm = await AndroidAlarmManager.periodic(
         const Duration(hours: 24),
         1,
